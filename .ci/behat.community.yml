@@ -134,6 +134,15 @@ acceptance:
                 - test.channel.context
             filters:
                 tags: '@acceptance'
+        volume-monitoring:
+            paths:
+                - '%paths.base%/tests/features/volume-monitoring'
+            contexts_services:
+                - test.catalog_volume_limits.report_context
+                - test.catalog_volume_limits.attribute_per_family_context
+                - test.catalog_volume_limits.product_context
+            filters:
+                tags: '@acceptance'
 
     extensions:
         Liuggio\Fastest\Behat\ListFeaturesExtension\Extension: ~
