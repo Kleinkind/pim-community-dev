@@ -168,7 +168,7 @@ module.exports = {
                     {
                         loader: 'ts-loader',
                         options: {
-                            configFile: path.resolve(__dirname, 'tsconfig.json'),
+                            configFile: path.resolve(__dirname, 'tsconfig.json')
                         }
                     },
                     {
@@ -176,7 +176,7 @@ module.exports = {
                         options: {
                             configMap: config
                         }
-                    },
+                    }
                 ],
                 include: /(web\/bundles)/,
                 exclude: /lib|node_modules|vendor/
