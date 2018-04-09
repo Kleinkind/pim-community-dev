@@ -40,25 +40,21 @@ class BuilderQueryTestCase extends TestCase
     }
 
     /**
-     * @param int $numberOfProducts
      * @param array $data
+     *
+     * @return ProductInterface
      */
-    protected function createProducts(int $numberOfProducts, array $data = []) : void
+    protected function createProduct(array $data = []) : ProductInterface
     {
-        $products = [];
-        $i = 0;
+        $product = $this->get('pim_catalog.builder.product')->createProduct('new_product_'.rand());
+        $this->get('pim_catalog.updater.product')->update($product, $data);
 
-        while ($i < $numberOfProducts) {
-            $product = $this->get('pim_catalog.builder.product')->createProduct('new_product_'.rand());
-            $this->get('pim_catalog.updater.product')->update($product, $data);
+        $constraintList = $this->get('pim_catalog.validator.product')->validate($product);
+        Assert::assertEquals(0, $constraintList->count());
 
-            $constraintList = $this->get('pim_catalog.validator.product')->validate($product);
-            Assert::assertEquals(0, $constraintList->count());
+        $this->get('pim_catalog.saver.product')->save($product);
 
-            $products[] = $product;
-            $i++;
-        }
-        $this->get('pim_catalog.saver.product')->saveAll($products);
+        return $product;
     }
 
     /**
