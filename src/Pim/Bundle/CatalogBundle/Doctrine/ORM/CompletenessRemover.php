@@ -2,6 +2,7 @@
 
 namespace Pim\Bundle\CatalogBundle\Doctrine\ORM;
 
+use Akeneo\Component\StorageUtils\Cache\CacheClearerInterface;
 use Akeneo\Component\StorageUtils\Cursor\CursorInterface;
 use Akeneo\Component\StorageUtils\Detacher\BulkObjectDetacherInterface;
 use Doctrine\DBAL\Connection;
@@ -44,12 +45,16 @@ class CompletenessRemover implements CompletenessRemoverInterface
     /** @var BulkObjectDetacherInterface */
     protected $bulkDetacher;
 
+    /** @var CacheClearerInterface */
+    protected $cacheClearer;
+
     /**
      * @param ProductQueryBuilderFactoryInterface $pqbFactory
      * @param EntityManagerInterface              $entityManager
      * @param ProductIndexer                      $indexer
      * @param string                              $completenessTable
      * @param BulkObjectDetacherInterface         $bulkDetacher
+     * @param CacheClearerInterface               $cacheClearer
      *
      * TODO: Pull-up day. Refactor before merge in master.
      */
@@ -58,13 +63,15 @@ class CompletenessRemover implements CompletenessRemoverInterface
         EntityManagerInterface $entityManager,
         ProductIndexer $indexer,
         $completenessTable,
-        BulkObjectDetacherInterface $bulkDetacher = null
+        BulkObjectDetacherInterface $bulkDetacher = null,
+        CacheClearerInterface $cacheClearer = null
     ) {
-        $this->pqbFactory = $pqbFactory;
-        $this->entityManager = $entityManager;
-        $this->indexer = $indexer;
+        $this->pqbFactory        = $pqbFactory;
+        $this->entityManager     = $entityManager;
+        $this->indexer           = $indexer;
         $this->completenessTable = $completenessTable;
-        $this->bulkDetacher = $bulkDetacher;
+        $this->bulkDetacher      = $bulkDetacher;
+        $this->cacheClearer      = $cacheClearer;
     }
 
     /**
@@ -152,6 +159,9 @@ class CompletenessRemover implements CompletenessRemoverInterface
                 if (null !== $this->bulkDetacher) {
                     $this->bulkDetacher->detachAll($bulkedProducts);
                 }
+                if (null !== $this->cacheClearer) {
+                    $this->cacheClearer->clear();
+                }
 
                 $bulkedProducts = [];
                 $productIds = [];
@@ -170,6 +180,9 @@ class CompletenessRemover implements CompletenessRemoverInterface
             $this->indexer->indexAll($bulkedProducts);
             if (null !== $this->bulkDetacher) {
                 $this->bulkDetacher->detachAll($bulkedProducts);
+            }
+            if (null !== $this->cacheClearer) {
+                $this->cacheClearer->clear();
             }
         }
     }
