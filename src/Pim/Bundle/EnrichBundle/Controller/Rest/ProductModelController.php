@@ -235,7 +235,7 @@ class ProductModelController
      *
      * @return Response
      */
-    public function postAction(Request $request, int $id): Response
+    public function postAction(Request $request, int $id): Re
     {
         if (!$request->isXmlHttpRequest()) {
             return new RedirectResponse('/');

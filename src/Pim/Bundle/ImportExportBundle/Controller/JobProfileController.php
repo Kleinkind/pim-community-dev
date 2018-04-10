@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -97,6 +98,10 @@ class JobProfileController
      */
     public function createAction(Request $request)
     {
+        if (!$request->isXmlHttpRequest()) {
+            return new RedirectResponse('/');
+        }
+
         $jobInstance = $this->jobInstanceFactory->createJobInstance($this->getJobType());
         $form = $this->formFactory->create(get_class($this->jobInstanceFormType), $jobInstance);
 
